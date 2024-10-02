@@ -10,3 +10,8 @@ This is an Complete React + Vite Project For Making An Weather Web Application
 - npm install
 - After that Run the following command
 - npm run dev
+## Screenshots
+
+Here are some screenshots of the project in action:
+
+![Screenshot 1](Weather-Forcasting-Application/screenshot1.png)
