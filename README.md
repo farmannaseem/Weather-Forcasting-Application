@@ -14,4 +14,4 @@ This is an Complete React + Vite Project For Making An Weather Web Application
 
 Here are some screenshots of the project in action:
 
-![Weather Forecasting Screenshot](Weather-Forcasting-Application/Screenshot%20(71).png)
+![Weather Forecasting Screenshot](Weather-Forcasting-Application/Screenshot(71).png)
