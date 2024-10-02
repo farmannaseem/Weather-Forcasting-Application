@@ -10,8 +10,8 @@ export default function ForecastCard({ day, highTemp, lowTemp, icon }) {
           alt="Weather icon"
           className="img-fluid"
         />
-        <p className="card-text">High: {highTemp}°C</p>
-        <p className="card-text">Low: {lowTemp}°C</p>
+        <p className="card-text">High: {highTemp}</p>
+        <p className="card-text">Low: {lowTemp}</p>
       </div>
     </div>
   );

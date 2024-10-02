@@ -1,21 +1,36 @@
 import { useState } from "preact/hooks";
 import React from "react";
 import CityDropdown from "./CustomInput";
-import ForecastCard from "./ForcastCard"; 
-import 'bootstrap/dist/css/bootstrap.min.css'; 
+import ForecastCard from "./ForcastCard";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function WeatherInfo() {
   const [weatherData, setWeather] = useState(null);
   const [forecastData, setForecast] = useState([]);
   const [isCelsius, setIsCelsius] = useState(true);
-
+  const [unit, setUnit] = useState("C°");
+  let tempUnit = unit;
   const apiKey = {
-    key: "451db31a922095940b8a5b8b38177ad9",
+    key: import.meta.env.VITE_API_KEY,
     baseWeather: "https://api.openweathermap.org/data/2.5/weather",
     baseForecast: "https://api.openweathermap.org/data/2.5/forecast",
   };
-
-  const handleClick = (city) => {
+  /**
+ * Fetches current weather and 5-day forecast data for a given city.
+ * 
+ * This function makes two API calls:
+ * 1. Fetches current weather data from the OpenWeatherMap API using the city name.
+ * 2. Fetches the 5-day weather forecast (with 3-hour intervals) for the same city.
+ * 
+ * The weather and forecast data are updated in the state. If there's an error (e.g., invalid city or network issue), 
+ * it logs the error to the console.
+ * 
+ * @param {string} city - The name of the city to fetch weather data for.
+ * 
+ * @example
+ * handleClick("New York");
+ */
+   const handleClick = (city) => {
     fetch(`${apiKey.baseWeather}?q=${city}&units=metric&appid=${apiKey.key}`)
       .then((res) => {
         if (!res.ok) {
@@ -59,16 +74,48 @@ export default function WeatherInfo() {
       });
   };
 
+  /**
+ * Handles the selection of a city from the city search component.
+ *
+ * @param {Object} city - The city object containing the name of the selected city.
+ */
+
   const handleCitySelect = (city) => {
     handleClick(city.name);
   };
+
+  /**
+ * Toggles the temperature unit between Celsius and Fahrenheit.
+ */
 
   const toggleTemperatureUnit = () => {
     setIsCelsius(!isCelsius);
   };
 
+  /**
+   * Converts a given temperature from Celsius to Fahrenheit or vice versa based on the current unit.
+   *
+   * @param {number} temp - The temperature value to be converted.
+   * @returns {string} - The converted temperature followed by the unit (either "F°" or "C°").
+   *
+   * @description
+   * If the current temperature unit is in Celsius, the function converts the value to Fahrenheit,
+   * appends the "F°" unit, and returns the result. If the unit is already in Fahrenheit, the original
+   * Celsius value is returned with the "C°" unit appended.
+   *
+   * @example
+   * const tempInFahrenheit = convertTemperature(25); // returns '77F°'
+   * const tempInCelsius = convertTemperature(77); // returns '77C°' if `isCelsius` is true
+   */
   const convertTemperature = (temp) => {
-    return isCelsius ? temp : (temp * 9) / 5 + 32;
+    if (!isCelsius) {
+      let convertedTemperature = Math.round((temp * 9) / 5 + 32).toString();
+      setUnit("F°");
+      return convertedTemperature + unit;
+    } else {
+      setUnit("C°");
+    }
+    return isCelsius ? temp + unit : "";
   };
 
   return (
@@ -84,16 +131,20 @@ export default function WeatherInfo() {
           <div className="card-body">
             <h1 className="card-title">{weatherData.name}</h1>
             <h2 className="card-subtitle mb-2">
-              {convertTemperature(weatherData.main.temp).toFixed(1)}°{isCelsius ? "C" : "F"}
+              {convertTemperature(Math.round(weatherData.main.temp))}
             </h2>
             <p className="card-text">
-              {weatherData.weather[0].main} - {weatherData.weather[0].description}
+              {weatherData.weather[0].main} -{" "}
+              {weatherData.weather[0].description}
             </p>
             <img
               src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
               alt={weatherData.weather[0].description}
             />
-            <button className="btn btn-primary mt-3" onClick={toggleTemperatureUnit}>
+            <button
+              className="btn btn-primary mt-3"
+              onClick={toggleTemperatureUnit}
+            >
               Switch to {isCelsius ? "Fahrenheit" : "Celsius"}
             </button>
           </div>
@@ -110,8 +161,8 @@ export default function WeatherInfo() {
               day={new Date(day.dt * 1000).toLocaleDateString("en-US", {
                 weekday: "long",
               })}
-              highTemp={convertTemperature(day.main.temp_max).toFixed(1)}
-              lowTemp={convertTemperature(day.main.temp_min).toFixed(1)}
+              highTemp={convertTemperature(Math.round(day.main.temp_max))}
+              lowTemp={convertTemperature(Math.round(day.main.temp_min))}
               icon={day.weather[0].icon}
             />
           </div>
@@ -120,4 +171,3 @@ export default function WeatherInfo() {
     </div>
   );
 }
-

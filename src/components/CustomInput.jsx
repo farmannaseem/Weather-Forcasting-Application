@@ -1,23 +1,37 @@
 import React, { useState } from "react";
 
-const apiKey = "451db31a922095940b8a5b8b38177ad9";
+const apiKey = import.meta.env.VITE_API_KEY;
 
 export default function CityDropdown({ onCitySelect }) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [filteredCities, setFilteredCities] = useState([]);
 
+ /**
+ * Fetches cities from the OpenWeatherMap API based on the search query provided by the user.
+ * If the query is too short or an error occurs, it clears the filtered cities list.
+ * 
+ * @async
+ * @function fetchCities
+ * @param {string} query - The city name or part of the city name to search for.
+ * @returns {void} Updates the filtered cities state with matching cities or an empty list on error.
+ */
+
   const fetchCities = async (query) => {
-    if (query.length < 6) {
+    if (query.length < 2) {
       setFilteredCities([]);
       return;
     }
+
 
     try {
       const response = await fetch(
         `https://api.openweathermap.org/data/2.5/find?q=${query}&appid=${apiKey}`
       );
+
       const data = await response.json();
+      console.log(data);
+
       if (data.list) {
         setFilteredCities(data.list);
       } else {
@@ -29,22 +43,42 @@ export default function CityDropdown({ onCitySelect }) {
     }
   };
 
+/**
+ * Handles changes in the search input field, updating the input value and triggering a city search.
+ * 
+ * @function handleSearchChange
+ * @param {Event} e - The input event generated when the user types in the search bar.
+ * @returns {void} Fetches cities based on the updated input.
+ */
+
   const handleSearchChange = (e) => {
     const searchValue = e.target.value;
     setSearchInput(searchValue);
     fetchCities(searchValue);
   };
-
+  /**
+ * Handles the selection of a city from the dropdown, triggering an action (e.g., displaying weather).
+ * It also clears the dropdown and search input after selection.
+ * 
+ * @function handleCitySelect
+ * @param {Object} city - The selected city object containing city information.
+ * @returns {void} Updates the state with the selected city and closes the dropdown.
+ */
   const handleCitySelect = (city) => {
     onCitySelect(city);
     setIsOpen(false);
     setSearchInput("");
     setFilteredCities([]);
   };
-
+  /**
+ * Toggles the dropdown visibility on and off, allowing the user to view or hide the city list.
+ * Clears the filtered cities list when closed.
+ * 
+ * @function toggleDropdown
+ * @returns {void} Toggles the open state of the dropdown and clears any listed cities when closed.
+ */
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
-    setSearchInput("");
     setFilteredCities([]);
   };
 
