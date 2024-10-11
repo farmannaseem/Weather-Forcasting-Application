@@ -18,5 +18,6 @@ This is an Complete React + Vite Project For Making An Weather Web Application
 ## Screenshots
 
 Here are some screenshot of the project in action:
+![React](https://img.shields.io/badge/React-18.2.0-blue?style=flat&logo=react)
 
 ![Weather Forecasting Screenshot](Screenshot%20(74).png)
